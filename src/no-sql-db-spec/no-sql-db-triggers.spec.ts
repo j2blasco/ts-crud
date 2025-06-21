@@ -1,118 +1,104 @@
-import { take } from 'rxjs/operators';
-import { TestDocumentData, pathTestDocument } from './no-sql-db.spec';
-import { testEnvironment } from 'src/environment/tests/test-environment.spec';
-import { firstValueFrom } from 'rxjs';
-import { DependencyInjector } from 'src/services/injector/injector';
-import { noSqlDatabaseInjectionToken } from '../no-sql-db.inject-token';
-import { DocumentPath, INoSqlDatabase } from '../no-sql-db.interface';
-import { createNoSqlDatabaseTesting } from '../../provider/testing/database.testing';
-import { describeTest } from 'src/testing/utils/describe-tests.spec';
+import { firstValueFrom, take } from "rxjs";
+import { INoSqlDatabase, DocumentPath } from "../no-sql-db.interface";
+import {
+  dbTestRootPath,
+  pathTestDocument,
+  TestDocumentData,
+} from "./no-sql-db.spec";
 
-describeTest('unit', 'NoSqlDatabase - observables', () => {
-  let db: INoSqlDatabase;
-
-  beforeAll(() => {
-    DependencyInjector.clear();
-    DependencyInjector.register(
-      noSqlDatabaseInjectionToken,
-      createNoSqlDatabaseTesting(),
-    );
-  });
-
-  beforeEach(async () => {
-    db = DependencyInjector.inject(noSqlDatabaseInjectionToken);
-    await db.deleteDocument(pathTestDocument);
-  });
-
-  describe('onWrite$', () => {
-    it('emits an event when a document is written', async () => {
-      const data: TestDocumentData = { stringField: 'test data' };
-
-      // Subscribe to onWrite$ and expect a single emission
-      const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
-
-      // Write data to trigger onWrite$ emission
-      await db.writeDocument(pathTestDocument, data);
-
-      const writeEvent = await onWritePromise;
-
-      // Verify the emitted write event matches the written data
-      expect(writeEvent).toEqual({
-        path: pathTestDocument,
-        before: null, // No existing document before the write
-        after: data,
-      });
-    });
-
-    it("emits the correct 'before' data when updating an existing document", async () => {
-      const initialData: TestDocumentData = { stringField: 'initial data' };
-      const updatedData: TestDocumentData = { stringField: 'updated data' };
-
-      // Write initial data
-      await db.writeDocument(pathTestDocument, initialData);
-
-      const data = (await db.readDocument(pathTestDocument)).unwrapOrThrow();
-      expect(data).toEqual(initialData);
-
-      // Subscribe to onWrite$ and expect a single emission
-      const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
-
-      // Write updated data to the same path
-      await db.writeDocument(pathTestDocument, updatedData);
-
-      const writeEvent = await onWritePromise;
-
-      // Verify the emitted write event has the correct 'before' and 'after' data
-      expect(writeEvent).toEqual({
-        path: pathTestDocument,
-        before: initialData,
-        after: updatedData,
-      });
-    });
-  });
-
-  describe('onDelete$', () => {
-    it('emits an event when a document is deleted', async () => {
-      const data: TestDocumentData = { stringField: 'data to delete' };
-
-      // Write data to ensure a document exists before deletion
-      await db.writeDocument(pathTestDocument, data);
-
-      // Subscribe to onDelete$ and expect a single emission
-      const onDeletePromise = firstValueFrom(db.onDelete$.pipe(take(1)));
-
-      // Delete the document to trigger onDelete$ emission
+export function testNoSqlDbTriggers(db: INoSqlDatabase) {
+  describe("NoSqlDatabase - Triggers", () => {
+    beforeEach(async () => {
       await db.deleteDocument(pathTestDocument);
+    });
 
-      const deleteEvent = await onDeletePromise;
+    describe("onWrite$", () => {
+      it("emits an event when a document is written", async () => {
+        const data: TestDocumentData = { stringField: "test data" };
 
-      // Verify the emitted delete event matches the deleted document data
-      expect(deleteEvent).toEqual({
-        path: pathTestDocument,
-        before: data,
+        // Subscribe to onWrite$ and expect a single emission
+        const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
+
+        // Write data to trigger onWrite$ emission
+        await db.writeDocument(pathTestDocument, data);
+
+        const writeEvent = await onWritePromise;
+
+        // Verify the emitted write event matches the written data
+        expect(writeEvent).toEqual({
+          path: pathTestDocument,
+          before: null, // No existing document before the write
+          after: data,
+        });
+      });
+
+      it("emits the correct 'before' data when updating an existing document", async () => {
+        const initialData: TestDocumentData = { stringField: "initial data" };
+        const updatedData: TestDocumentData = { stringField: "updated data" };
+
+        // Write initial data
+        await db.writeDocument(pathTestDocument, initialData);
+
+        const data = (await db.readDocument(pathTestDocument)).unwrapOrThrow();
+        expect(data).toEqual(initialData);
+
+        // Subscribe to onWrite$ and expect a single emission
+        const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
+
+        // Write updated data to the same path
+        await db.writeDocument(pathTestDocument, updatedData);
+
+        const writeEvent = await onWritePromise;
+
+        // Verify the emitted write event has the correct 'before' and 'after' data
+        expect(writeEvent).toEqual({
+          path: pathTestDocument,
+          before: initialData,
+          after: updatedData,
+        });
       });
     });
 
-    it('does not emit an event when attempting to delete a non-existing document', async () => {
-      const path: DocumentPath = [
-        testEnvironment.testNoSqlDatabaseRootPath,
-        'nonexistent-document',
-      ];
+    describe("onDelete$", () => {
+      it("emits an event when a document is deleted", async () => {
+        const data: TestDocumentData = { stringField: "data to delete" };
 
-      // Listen to onDelete$ and ensure no emission
-      let emitted = false;
-      const subscription = db.onDelete$.subscribe(() => {
-        emitted = true;
+        // Write data to ensure a document exists before deletion
+        await db.writeDocument(pathTestDocument, data);
+
+        // Subscribe to onDelete$ and expect a single emission
+        const onDeletePromise = firstValueFrom(db.onDelete$.pipe(take(1)));
+
+        // Delete the document to trigger onDelete$ emission
+        await db.deleteDocument(pathTestDocument);
+
+        const deleteEvent = await onDeletePromise;
+
+        // Verify the emitted delete event matches the deleted document data
+        expect(deleteEvent).toEqual({
+          path: pathTestDocument,
+          before: data,
+        });
       });
 
-      // Attempt to delete a non-existing document
-      await db.deleteDocument(path);
+      it("does not emit an event when attempting to delete a non-existing document", async () => {
+        const path: DocumentPath = [dbTestRootPath, "nonexistent-document"];
 
-      // Unsubscribe to clean up
-      subscription.unsubscribe();
+        // Listen to onDelete$ and ensure no emission
+        let emitted = false;
+        const subscription = db.onDelete$.subscribe(() => {
+          emitted = true;
+        });
 
-      // Verify that no onDelete$ event was emitted
-      expect(emitted).toBe(false);
+        // Attempt to delete a non-existing document
+        await db.deleteDocument(path);
+
+        // Unsubscribe to clean up
+        subscription.unsubscribe();
+
+        // Verify that no onDelete$ event was emitted
+        expect(emitted).toBe(false);
+      });
     });
   });
-});
+}

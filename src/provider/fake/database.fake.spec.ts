@@ -1,7 +1,4 @@
-import { setEnvironment } from 'src/environment/environment';
-import { testNoSqlDbWrite } from '../../core/no-sql-db-spec/no-sql-db-write-document.spec';
-import { describeTest } from 'src/testing/utils/describe-tests.spec';
+import { testNoSqlDb } from "../../no-sql-db-spec/no-sql-db.spec";
+import { createNoSqlDatabaseTesting } from "./database.fake";
 
-describeTest('unit', 'NoSqlDatabaseTesting', () => {
-  testNoSqlDbWrite(async () => await setEnvironment('test'));
-});
+testNoSqlDb(createNoSqlDatabaseTesting());
