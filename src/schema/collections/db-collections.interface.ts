@@ -1,8 +1,8 @@
-import { Result, ErrorWithCode } from 'src/common/utils/result';
 import { DocumentId } from '../documents/db-documents.interface';
 import { NoSqlDbQueryConstraint } from '../../no-sql-db-constraints';
+import { ErrorWithCode, Result } from '@j2blasco/ts-result';
 
-export interface IDatabaseCollection<TIdentifier, TData> {
+export interface IDatabaseCollections<TIdentifier, TData> {
   // TODO: all of these might fail, so we should return a Result
   add(args: { identifier: TIdentifier; data: TData }): Promise<{
     id: string;

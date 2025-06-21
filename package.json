@@ -30,7 +30,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@j2blasco/ts-result": "^0.0.6",
+    "@j2blasco/ts-result": "^0.0.7",
     "rxjs": "^7.8.2",
     "uuid": "^11.1.0"
   }

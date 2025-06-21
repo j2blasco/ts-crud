@@ -1,29 +1,28 @@
-import { ErrorWithCode, Result } from 'src/common/utils/result';
-import { IDatabaseCollection } from './db-collections.interface';
-import { DocumentId } from '../documents/db-documents.interface';
-import { NoSqlDbQueryConstraint } from '../../no-sql-db-constraints';
+import { IDatabaseCollections } from "./db-collections.interface";
+import { DocumentId } from "../documents/db-documents.interface";
+import { NoSqlDbQueryConstraint } from "../../no-sql-db-constraints";
 import {
   CollectionPath,
   DocumentPath,
   INoSqlDatabase,
-} from '../../no-sql-db.interface';
-import { DependencyInjector } from 'src/services/injector/injector';
-import { noSqlDatabaseInjectionToken } from '../../no-sql-db.inject-token';
+} from "../../no-sql-db.interface";
+import { Result, ErrorWithCode } from "@j2blasco/ts-result";
 
 export class DatabaseCollections<TCollectionIdentifier, TData>
-  implements IDatabaseCollection<TCollectionIdentifier, TData>
+  implements IDatabaseCollections<TCollectionIdentifier, TData>
 {
-  private db: INoSqlDatabase;
-  private getCollectionPath: (
-    identifier: TCollectionIdentifier,
+  private readonly db: INoSqlDatabase;
+  private readonly getCollectionPath: (
+    identifier: TCollectionIdentifier
   ) => CollectionPath;
 
   constructor(
     private deps: {
+      db: INoSqlDatabase;
       getCollectionPath: (identifier: TCollectionIdentifier) => CollectionPath;
-    },
+    }
   ) {
-    this.db = DependencyInjector.inject(noSqlDatabaseInjectionToken);
+    this.db = this.deps.db;
     this.getCollectionPath = this.deps.getCollectionPath;
   }
 
@@ -39,10 +38,10 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   public async read<TData>(args: {
     identifier: TCollectionIdentifier;
     id: DocumentId;
-  }): Promise<Result<TData, ErrorWithCode<'not-found'>>> {
+  }): Promise<Result<TData, ErrorWithCode<"not-found">>> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id,
+      args.id
     ) as DocumentPath;
     const result = await this.db.readDocument<TData>(path);
     return result;
@@ -68,7 +67,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id,
+      args.id
     ) as DocumentPath;
     await this.db.writeDocument(path, args.data);
   }
@@ -79,7 +78,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id,
+      args.id
     ) as DocumentPath;
     await this.db.deleteDocument(path);
   }

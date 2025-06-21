@@ -1,22 +1,23 @@
-import { DependencyInjector } from 'src/services/injector/injector';
-import { DocumentPath, INoSqlDatabase } from '../../no-sql-db.interface';
-import { IDatabaseDocuments } from './db-documents.interface';
-import { resultSuccess, unwrapSuccessResult } from 'src/common/utils/result';
-import { noSqlDatabaseInjectionToken } from '../../no-sql-db.inject-token';
+import { resultSuccess, unwrapSuccessResult } from "@j2blasco/ts-result";
+import { DocumentPath, INoSqlDatabase } from "../../no-sql-db.interface";
+import { IDatabaseDocuments } from "./db-documents.interface";
 
 export type TestingDocumentPath = string;
 
 export class DatabaseDocuments<TDocumentIdentifier, TData>
   implements IDatabaseDocuments<TDocumentIdentifier, TData>
 {
-  private db: INoSqlDatabase;
-  private getDocumentPath: (identifier: TDocumentIdentifier) => DocumentPath;
+  private readonly db: INoSqlDatabase;
+  private readonly getDocumentPath: (
+    identifier: TDocumentIdentifier
+  ) => DocumentPath;
 
   constructor(deps: {
     getDocumentPath: (identifier: TDocumentIdentifier) => DocumentPath;
+    db: INoSqlDatabase;
   }) {
     this.getDocumentPath = deps.getDocumentPath;
-    this.db = DependencyInjector.inject(noSqlDatabaseInjectionToken);
+    this.db = deps.db;
   }
 
   public async create(args: {
