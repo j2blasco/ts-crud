@@ -58,7 +58,7 @@ export interface INoSqlDatabase {
   readCollection<T>(args: {
     path: CollectionPath;
     constraints?: Array<NoSqlDbQueryConstraint<T>>;
-  }): Promise<Array<{ data: T; id: string }>>; //TODO: Add error handling not-found
+  }): Promise<Result<Array<{ data: T; id: string }>, ErrorWithCode<"not-found">>>;
   addToCollection<T>(path: CollectionPath, data: T): Promise<{ id: string }>;
   deleteCollection(path: CollectionPath): Promise<void>;
 }

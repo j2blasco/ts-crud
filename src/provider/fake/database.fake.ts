@@ -81,11 +81,11 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
   public async readCollection<T>(args: {
     path: CollectionPath;
     constraints?: Array<NoSqlDbQueryConstraint<T>>;
-  }): Promise<Array<{ data: T; id: string }>> {
+  }): Promise<Result<Array<{ data: T; id: string }>, ErrorWithCode<"not-found">>> {
     await this.simulateCommunicationDelay();
     const collection = this.getElementAtPath(args.path);
     if (!collection || typeof collection !== "object") {
-      return [];
+      return resultError.withCode("not-found");
     }
 
     let documents = Object.entries(collection).map(([id, doc]) => ({
@@ -93,7 +93,7 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
       data: doc as T,
     }));
 
-    if (!args.constraints) return documents;
+    if (!args.constraints) return resultSuccess(documents);
 
     for (const constraint of args.constraints) {
       if (constraint.type === "where") {
@@ -127,7 +127,7 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
       }
     }
 
-    return documents;
+    return resultSuccess(documents);
   }
 
   private getElementAtPath(path: NoSqlDbPath): any {

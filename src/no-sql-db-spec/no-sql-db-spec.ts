@@ -1,4 +1,4 @@
-import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
+import { unwrapSuccessResult, resultSuccessVoid, ErrorWithCode } from "@j2blasco/ts-result";
 import {
   DocumentPath,
   CollectionPath,
@@ -143,7 +143,10 @@ export function testNoSqlDb(db: INoSqlDatabase) {
           { id: "doc1", data: { stringField: "value1", numberField: 10 } },
           { id: "doc3", data: { stringField: "value1", numberField: 30 } },
         ] as Array<{ id: string; data: TestDocumentData }>;
-        expect(result).toEqual(expetedResult);
+        const actualResult = result.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        expect(unwrapSuccessResult(actualResult)).toEqual(expetedResult);
       });
       it("returns documents that match an 'array-contains' constraint", async () => {
         // Add test documents to the collection
@@ -173,7 +176,10 @@ export function testNoSqlDb(db: INoSqlDatabase) {
           ],
         });
         // Expect only documents where arrayField contains 'value1'
-        expect(result).toEqual([
+        const actualResult = result.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        expect(unwrapSuccessResult(actualResult)).toEqual([
           { id: "doc1", data: { arrayField: ["value1", "value2"] } },
           { id: "doc3", data: { arrayField: ["value1", "value4"] } },
         ]);
@@ -204,7 +210,10 @@ export function testNoSqlDb(db: INoSqlDatabase) {
           constraints: [{ type: "limit", value: 2 }],
         });
         // Expect only the first two documents to be returned
-        expect(result).toEqual([
+        const actualResult = result.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        expect(unwrapSuccessResult(actualResult)).toEqual([
           { id: "doc1", data: { stringField: "data1" } },
           { id: "doc2", data: { stringField: "data2" } },
         ]);
@@ -247,7 +256,10 @@ export function testNoSqlDb(db: INoSqlDatabase) {
           ],
         });
         // Expect only the document that matches both 'where' constraints and limit constraint
-        expect(result).toEqual([
+        const actualResult = result.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        expect(unwrapSuccessResult(actualResult)).toEqual([
           { id: "doc1", data: { stringField: "value1", numberField: 10 } },
         ]);
       });
@@ -276,19 +288,27 @@ export function testNoSqlDb(db: INoSqlDatabase) {
           path: collectionPath,
           constraints: [],
         });
-        expect(result).toEqual([
+        const actualResult = result.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        expect(unwrapSuccessResult(actualResult)).toEqual([
           { id: "doc1", data: { stringField: "data1" } },
           { id: "doc2", data: { stringField: "data2" } },
           { id: "doc3", data: { stringField: "data3" } },
         ]);
         // Delete the entire collection
         await db.deleteCollection(collectionPath);
-        // Verify that the collection is now empty
+        // Verify that the collection is now not found
         result = await db.readCollection({
           path: collectionPath,
           constraints: [],
         });
-        expect(result).toEqual([]);
+        let errorCode = "";
+        result.catchError((error) => {
+          errorCode = error.code;
+          return resultSuccessVoid();
+        });
+        expect(errorCode).toBe("not-found");
       });
 
       it("does nothing if the collection does not exist", async () => {
@@ -299,12 +319,17 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         ];
         // Attempt to delete a non-existing collection
         await db.deleteCollection(nonExistentCollectionPath);
-        // Verify that no error occurs and the collection still returns an empty result
+        // Verify that no error occurs and the collection returns a not-found error
         const result = await db.readCollection({
           path: nonExistentCollectionPath,
           constraints: [],
         });
-        expect(result).toEqual([]);
+        let errorCode = "";
+        result.catchError((error) => {
+          errorCode = error.code;
+          return resultSuccessVoid();
+        });
+        expect(errorCode).toBe("not-found");
       });
     });
   });

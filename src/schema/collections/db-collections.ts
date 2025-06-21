@@ -50,10 +50,10 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   public async readAll<TData>(args: {
     identifier: TCollectionIdentifier;
     constraints?: Array<NoSqlDbQueryConstraint<TData>>;
-  }): Promise<Array<{ data: TData; id: DocumentId }>> {
+  }): Promise<Result<Array<{ data: TData; id: DocumentId }>, ErrorWithCode<"not-found">>> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier);
-    const result = this.db.readCollection<TData>({
+    const result = await this.db.readCollection<TData>({
       path,
       constraints: args.constraints,
     });

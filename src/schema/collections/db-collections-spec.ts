@@ -1,4 +1,4 @@
-import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
+import { unwrapSuccessResult, ErrorWithCode, resultSuccessVoid } from "@j2blasco/ts-result";
 import { dbTestRootPath } from "../../no-sql-db-spec/no-sql-db-spec";
 import { CollectionPath, INoSqlDatabase } from "../../no-sql-db.interface";
 import { DatabaseCollections } from "./db-collections";
@@ -88,7 +88,10 @@ export function testDbCollections(db: INoSqlDatabase) {
         const readResult = await collection.readAll({
           identifier: testIdentifier,
         });
-        const data = readResult
+        const actualResult = readResult.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        const data = unwrapSuccessResult(actualResult)
           .map((r) => r.data)
           .sort((a, b) => a.value - b.value);
         expect(data).toEqual([
@@ -121,7 +124,10 @@ export function testDbCollections(db: INoSqlDatabase) {
             },
           ],
         });
-        const data = readResult
+        const actualResult = readResult.catchError((error: ErrorWithCode<"not-found">) => {
+          throw `Error reading collection: ${JSON.stringify(error)}`;
+        });
+        const data = unwrapSuccessResult(actualResult)
           .map((r) => r.data)
           .sort((a, b) => a.value - b.value);
         expect(data).toEqual([
@@ -216,7 +222,12 @@ export function testDbCollections(db: INoSqlDatabase) {
         const readResult = await collection.readAll({
           identifier: testIdentifier,
         });
-        expect(readResult).toEqual([]);
+        let errorCode = "";
+        readResult.catchError((error) => {
+          errorCode = error.code;
+          return resultSuccessVoid();
+        });
+        expect(errorCode).toBe("not-found");
       });
     });
   });

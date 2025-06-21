@@ -14,7 +14,7 @@ export interface IDatabaseCollections<TIdentifier, TData> {
   readAll(args: {
     identifier: TIdentifier;
     constraints?: Array<NoSqlDbQueryConstraint<TData>>;
-  }): Promise<Array<{ data: TData; id: DocumentId }>>;
+  }): Promise<Result<Array<{ data: TData; id: DocumentId }>, ErrorWithCode<'not-found'>>>;
   write(args: {
     identifier: TIdentifier;
     id: DocumentId;
