@@ -4,7 +4,7 @@ import {
   dbTestRootPath,
   pathTestDocument,
   TestDocumentData,
-} from "./no-sql-db.spec";
+} from "./no-sql-db-spec";
 
 export function testNoSqlDbTriggers(db: INoSqlDatabase) {
   describe("NoSqlDatabase - Triggers", () => {

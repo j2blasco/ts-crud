@@ -4,8 +4,8 @@ import {
   CollectionPath,
   INoSqlDatabase,
 } from "../no-sql-db.interface";
-import { testNoSqlDbWrite } from "./no-sql-db-write-document.spec";
-import { testNoSqlDbTriggers } from "./no-sql-db-triggers.spec";
+import { testNoSqlDbWrite } from "./no-sql-db-write-document-spec";
+import { testNoSqlDbTriggers } from "./no-sql-db-triggers-spec";
 
 export type TestDocumentData = {
   stringField?: string;

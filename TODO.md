@@ -1,0 +1,1 @@
+* Separate spec utils from test, if not test fails due to error "test should contain at least one test"
