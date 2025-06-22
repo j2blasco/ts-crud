@@ -2,16 +2,25 @@
   "name": "@j2blasco/ts-crud",
   "version": "0.0.1",
   "description": "CRUD abstraction library for TypeScript",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./types/index.d.ts"    }
+  },
   "files": [
     "dist",
-    "README.md",
-    "LICENSE"
+    "types",
+    "README.md",    "LICENSE"
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json"
   },
   "keywords": [
     "crud",
