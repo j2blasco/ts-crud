@@ -4,7 +4,7 @@ import {
   resultError,
   resultSuccess,
 } from "@j2blasco/ts-result";
-import { CollectionPath } from "../no-sql-db.interface";
+import { CollectionPath } from "../core/no-sql-db.interface";
 
 export function arrayToCollectionPath(
   array: string[]

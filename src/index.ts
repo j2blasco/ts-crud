@@ -1,3 +1,3 @@
-export * from "./no-sql-db-constraints";
-export * from "./no-sql-db.interface";
+export * from "./core/no-sql-db-constraints";
+export * from "./core/no-sql-db.interface";
 export * from "./provider/fake/database.fake";

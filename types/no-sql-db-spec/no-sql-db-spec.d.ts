@@ -1,4 +1,4 @@
-import { DocumentPath, CollectionPath, INoSqlDatabase } from "../no-sql-db.interface";
+import { DocumentPath, CollectionPath, INoSqlDatabase } from "../core/no-sql-db.interface";
 export type TestDocumentData = {
     stringField?: string;
     numberField?: number;

@@ -6,13 +6,13 @@ import {
 } from "@j2blasco/ts-result";
 import { Subject } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
-import { NoSqlDbQueryConstraint } from "../../no-sql-db-constraints";
+import { NoSqlDbQueryConstraint } from "../../core/no-sql-db-constraints";
 import {
   INoSqlDatabase,
   NoSqlDbPath,
   DocumentPath,
   CollectionPath,
-} from "../../no-sql-db.interface";
+} from "../../core/no-sql-db.interface";
 
 export function createNoSqlDatabaseTesting() {
   return new NoSqlDatabaseTesting();

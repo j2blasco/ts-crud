@@ -1,11 +1,11 @@
 import { IDatabaseCollections } from "./db-collections.interface";
 import { DocumentId } from "../documents/db-documents.interface";
-import { NoSqlDbQueryConstraint } from "../../no-sql-db-constraints";
+import { NoSqlDbQueryConstraint } from "../../core/no-sql-db-constraints";
 import {
   CollectionPath,
   DocumentPath,
   INoSqlDatabase,
-} from "../../no-sql-db.interface";
+} from "../../core/no-sql-db.interface";
 import { Result, ErrorWithCode } from "@j2blasco/ts-result";
 
 export class DatabaseCollections<TCollectionIdentifier, TData>
