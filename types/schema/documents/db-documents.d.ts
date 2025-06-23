@@ -1,4 +1,4 @@
-import { DocumentPath, INoSqlDatabase } from "../../no-sql-db.interface";
+import { DocumentPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
 import { IDatabaseDocuments } from "./db-documents.interface";
 export type TestingDocumentPath = string;
 export declare class DatabaseDocuments<TDocumentIdentifier, TData> implements IDatabaseDocuments<TDocumentIdentifier, TData> {
@@ -23,4 +23,3 @@ export declare class DatabaseDocuments<TDocumentIdentifier, TData> implements ID
         identifier: TDocumentIdentifier;
     }): Promise<void>;
 }
-//# sourceMappingURL=db-documents.d.ts.map

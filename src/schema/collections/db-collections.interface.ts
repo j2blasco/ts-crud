@@ -1,5 +1,5 @@
 import { DocumentId } from '../documents/db-documents.interface';
-import { NoSqlDbQueryConstraint } from '../../no-sql-db-constraints';
+import { NoSqlDbQueryConstraint } from '../../core/no-sql-db-constraints';
 import { ErrorWithCode, Result } from '@j2blasco/ts-result';
 
 export interface IDatabaseCollections<TIdentifier, TData> {

@@ -15,4 +15,3 @@ export interface IDatabaseDocuments<TIdentifier, TData> {
         identifier: TIdentifier;
     }) => Promise<void>;
 }
-//# sourceMappingURL=db-documents.interface.d.ts.map

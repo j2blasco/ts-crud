@@ -1,7 +1,7 @@
 import { IDatabaseCollections } from "./db-collections.interface";
 import { DocumentId } from "../documents/db-documents.interface";
-import { NoSqlDbQueryConstraint } from "../../no-sql-db-constraints";
-import { CollectionPath, INoSqlDatabase } from "../../no-sql-db.interface";
+import { NoSqlDbQueryConstraint } from "../../core/no-sql-db-constraints";
+import { CollectionPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
 import { Result, ErrorWithCode } from "@j2blasco/ts-result";
 export declare class DatabaseCollections<TCollectionIdentifier, TData> implements IDatabaseCollections<TCollectionIdentifier, TData> {
     private deps;
@@ -41,4 +41,3 @@ export declare class DatabaseCollections<TCollectionIdentifier, TData> implement
         identifier: TCollectionIdentifier;
     }): Promise<void>;
 }
-//# sourceMappingURL=db-collections.d.ts.map
