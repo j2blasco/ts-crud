@@ -1,4 +1,4 @@
-import { pathTestDocument, TestDocumentData } from "./no-sql-db-spec";
+import { pathTestDocument, TestDocumentData } from "./no-sql-db.utils.test";
 import { INoSqlDatabase } from "../no-sql-db.interface";
 
 export function testNoSqlDbWrite(db: INoSqlDatabase) {

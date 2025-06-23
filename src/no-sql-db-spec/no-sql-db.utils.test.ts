@@ -1,11 +1,11 @@
-import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
+import { unwrapSuccessResult, resultSuccessVoid, ErrorWithCode } from "@j2blasco/ts-result";
 import {
   DocumentPath,
   CollectionPath,
   INoSqlDatabase,
 } from "../no-sql-db.interface";
-import { testNoSqlDbWrite } from "./no-sql-db-write-document-spec";
-import { testNoSqlDbTriggers } from "./no-sql-db-triggers-spec";
+import { testNoSqlDbWrite } from "./no-sql-db-write-document.utils.test";
+import { testNoSqlDbTriggers } from "./no-sql-db-triggers.utils.test";
 
 export type TestDocumentData = {
   stringField?: string;
@@ -38,7 +38,7 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         // Read the document at the given path
         const result = (
           await db.readDocument<TestDocumentData>(path)
-        ).catchError((error) => {
+        ).catchError((error: ErrorWithCode<"not-found">) => {
           throw `Error reading document: ${JSON.stringify(error)}`;
         });
         // Unwrap the result and assert it matches the data written
@@ -52,7 +52,7 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         const result = await db.readDocument<TestDocumentData>(path);
         // Unwrap the error result and assert it has the correct error code
         let errorCode = "";
-        result.catchError((error) => {
+        result.catchError((error: ErrorWithCode<"not-found">) => {
           errorCode = error.code;
           return resultSuccessVoid();
         });
@@ -79,7 +79,7 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         let errorCode = "";
         result = (
           await db.readDocument<TestDocumentData>(pathTestDocument)
-        ).catchError((error) => {
+        ).catchError((error: ErrorWithCode<"not-found">) => {
           errorCode = error.code;
           return resultSuccessVoid();
         });
@@ -93,7 +93,7 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         await db.deleteDocument(path);
         // Attempt to read the non-existent document to verify it still returns "not-found"
         let errorCode = "";
-        (await db.readDocument<TestDocumentData>(path)).catchError((error) => {
+        (await db.readDocument<TestDocumentData>(path)).catchError((error: ErrorWithCode<"not-found">) => {
           errorCode = error.code;
           return resultSuccessVoid();
         });
