@@ -1,5 +1,5 @@
 import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
-import { dbTestRootPath } from "../../no-sql-db-spec/no-sql-db-spec";
+import { dbTestRootPath } from "../../core/tests/no-sql-db.utils.test";
 import { CollectionPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
 import { DatabaseCollections } from "./db-collections";
 import { IDatabaseCollections } from "./db-collections.interface";
