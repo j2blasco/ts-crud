@@ -55,7 +55,7 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
       const start = performance.now();
       while (performance.now() - start < this.fakeCommunicationDelayMs) {
         // Busy-wait loop to simulate computational delay
-        await new Promise((resolve) => setImmediate(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
       resolve();
     });
