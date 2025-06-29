@@ -4,8 +4,8 @@ import {
   resultSuccess,
   resultError,
 } from "@j2blasco/ts-result";
-import { NoSqlDbQueryConstraint } from "../no-sql-db-constraints";
 import { Observable } from "rxjs";
+import { NoSqlDbQueryConstraint } from "./no-sql-db-constraints";
 
 export function ensureValidDocumentPath(
   array: string[]
