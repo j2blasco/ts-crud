@@ -5,6 +5,10 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/j2blasco/ts-crud"
+  },
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
