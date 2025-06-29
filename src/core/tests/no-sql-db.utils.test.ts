@@ -1,4 +1,4 @@
-import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
+import { resultSuccessVoid } from "@j2blasco/ts-result";
 import {
   DocumentPath,
   CollectionPath,
@@ -38,11 +38,9 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         // Read the document at the given path
         const result = (
           await db.readDocument<TestDocumentData>(path)
-        ).catchError((error) => {
-          throw `Error reading document: ${JSON.stringify(error)}`;
-        });
+        )
         // Unwrap the result and assert it matches the data written
-        const docData = unwrapSuccessResult(result);
+        const docData = result.unwrapOrThrow();
         expect(docData).toEqual(data);
       });
 
@@ -66,12 +64,8 @@ export function testNoSqlDb(db: INoSqlDatabase) {
         // Write a document to the specified path
         await db.writeDocument<TestDocumentData>(pathTestDocument, data);
         // Verify the document exists before deletion
-        let result = (
-          await db.readDocument<TestDocumentData>(pathTestDocument)
-        ).catchError((error) => {
-          throw `Error reading document: ${JSON.stringify(error)}`;
-        });
-        const docData = unwrapSuccessResult(result);
+        let result = await db.readDocument<TestDocumentData>(pathTestDocument);
+        const docData = result.unwrapOrThrow();
         expect(docData).toEqual(data);
         // Delete the document at the given path
         await db.deleteDocument(pathTestDocument);
