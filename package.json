@@ -1,6 +1,6 @@
 {
   "name": "@j2blasco/ts-crud",
-  "version": "0.0.3",
+  "version": "0.1.1",
   "description": "CRUD abstraction library for TypeScript",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
