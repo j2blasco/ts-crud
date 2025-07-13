@@ -1,6 +1,6 @@
 import { NoSqlDbQueryConstraint } from '../../core/no-sql-db-constraints';
 import { DocumentId } from '../documents/db-documents.interface';
-import { ErrorWithCode, Result } from '@j2blasco/ts-result';
+import { ErrorWithCode, Result, ErrorUnknown } from '@j2blasco/ts-result';
 
 export interface IDatabaseCollections<TIdentifier, TData> {
   // TODO: all of these might fail, so we should return a Result
@@ -10,7 +10,7 @@ export interface IDatabaseCollections<TIdentifier, TData> {
   read(args: {
     identifier: TIdentifier;
     id: DocumentId;
-  }): Promise<Result<TData, ErrorWithCode<'not-found'>>>;
+  }): Promise<Result<TData, ErrorWithCode<'not-found'> | ErrorUnknown>>;
   readAll(args: {
     identifier: TIdentifier;
     constraints?: Array<NoSqlDbQueryConstraint<TData>>;

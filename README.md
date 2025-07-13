@@ -15,6 +15,7 @@ npm install @j2blasco/ts-crud
 - Query constraints (where, array-contains, limit)
 - Observable events for write and delete operations
 - Fake in-memory database for testing
+- **Full Result-based error handling** - All operations return `Result<T, ErrorType>` for robust error handling
 
 ## Usage
 
@@ -27,7 +28,8 @@ import { createNoSqlDatabaseTesting } from '@j2blasco/ts-crud';
 const db = createNoSqlDatabaseTesting();
 
 // Write a document
-await db.writeDocument(['users', 'user1'], { name: 'Alice', age: 30 });
+const writeResult = await db.writeDocument(['users', 'user1'], { name: 'Alice', age: 30 });
+writeResult.unwrapOrThrow(); // Throws if write failed
 
 // Read a document
 const result = await db.readDocument(['users', 'user1']);
@@ -36,16 +38,18 @@ if (result.success) {
 }
 
 // Add to a collection
-await db.addToCollection(['users'], { name: 'Bob', age: 25 });
+const addResult = await db.addToCollection(['users'], { name: 'Bob', age: 25 });
+const newDocId = addResult.unwrapOrThrow().id; // Get the new document ID or throw if failed
 
 // Query a collection with constraints
-const users = await db.readCollection({
+const usersResult = await db.readCollection({
   path: ['users'],
   constraints: [
     { type: 'where', field: 'age', operator: '>=', value: 18 },
     { type: 'limit', value: 10 },
   ],
 });
+const users = usersResult.unwrapOrThrow(); // Get the users array or throw if failed
 console.log(users);
 ```
 

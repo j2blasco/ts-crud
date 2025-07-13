@@ -22,16 +22,14 @@ export function testDbCollections(db: INoSqlDatabase) {
     let collection: IDatabaseCollections<
       TestCollectionIdentifier,
       TestCollectionData
-    >;
-
-    beforeEach(async () => {
-      // Clear the data store before each test
-      collection = new DatabaseCollections<
-        TestCollectionIdentifier,
-        TestCollectionData
-      >({ db, getCollectionPath: getTestCollectionPath });
-      await collection.deleteAll({ identifier: testIdentifier });
-    });
+    >;      beforeEach(async () => {
+        // Clear the data store before each test
+        collection = new DatabaseCollections<
+          TestCollectionIdentifier,
+          TestCollectionData
+        >({ db, getCollectionPath: getTestCollectionPath });
+        await collection.deleteAll({ identifier: testIdentifier });
+      });
 
     describe("add", () => {
       it("adds a document to the collection", async () => {

@@ -3,6 +3,8 @@ import {
   ErrorWithCode,
   resultSuccess,
   resultError,
+  ErrorUnknown,
+  SuccessVoid,
 } from "@j2blasco/ts-result";
 import { Observable } from "rxjs";
 import { NoSqlDbQueryConstraint } from "./no-sql-db-constraints";
@@ -48,17 +50,20 @@ export interface INoSqlDatabase {
   }>;
 
   // Document
-  writeDocument<T>(path: DocumentPath, data: T): Promise<void>;
+  writeDocument<T>(
+    path: DocumentPath,
+    data: T
+  ): Promise<Result<SuccessVoid, ErrorUnknown>>;
   readDocument<T>(
     path: DocumentPath
-  ): Promise<Result<T, ErrorWithCode<"not-found">>>;
-  deleteDocument(path: DocumentPath): Promise<void>;
+  ): Promise<Result<T, ErrorWithCode<"not-found"> | ErrorUnknown>>;
+  deleteDocument(path: DocumentPath): Promise<Result<SuccessVoid, ErrorUnknown>>;
 
   // Collection
   readCollection<T>(args: {
     path: CollectionPath;
     constraints?: Array<NoSqlDbQueryConstraint<T>>;
-  }): Promise<Array<{ data: T; id: string }>>; //TODO: Add error handling not-found
-  addToCollection<T>(path: CollectionPath, data: T): Promise<{ id: string }>;
-  deleteCollection(path: CollectionPath): Promise<void>;
+  }): Promise<Result<Array<{ data: T; id: string }>, ErrorWithCode<"not-found"> | ErrorUnknown>>; 
+  addToCollection<T>(path: CollectionPath, data: T): Promise<Result<{ id: string }, ErrorUnknown>>;
+  deleteCollection(path: CollectionPath): Promise<Result<SuccessVoid, ErrorUnknown>>;
 }

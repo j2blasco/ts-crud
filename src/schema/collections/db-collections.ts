@@ -6,7 +6,7 @@ import {
   DocumentPath,
   INoSqlDatabase,
 } from "../../core/no-sql-db.interface";
-import { Result, ErrorWithCode } from "@j2blasco/ts-result";
+import { Result, ErrorWithCode, resultSuccess, ErrorUnknown } from "@j2blasco/ts-result";
 
 export class DatabaseCollections<TCollectionIdentifier, TData>
   implements IDatabaseCollections<TCollectionIdentifier, TData>
@@ -32,13 +32,14 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   }): Promise<{ id: string }> {
     const { identifier, data } = args;
     const path = this.getCollectionPath(identifier);
-    return await this.db.addToCollection(path as CollectionPath, data);
+    const result = await this.db.addToCollection(path as CollectionPath, data);
+    return result.unwrapOrThrow(); // Convert Result to value or throw error
   }
 
   public async read<TData>(args: {
     identifier: TCollectionIdentifier;
     id: DocumentId;
-  }): Promise<Result<TData, ErrorWithCode<"not-found">>> {
+  }): Promise<Result<TData, ErrorWithCode<"not-found"> | ErrorUnknown>> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
       args.id
@@ -53,11 +54,17 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   }): Promise<Array<{ data: TData; id: DocumentId }>> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier);
-    const result = this.db.readCollection<TData>({
+    const result = await this.db.readCollection<TData>({
       path,
       constraints: args.constraints,
     });
-    return result;
+    // Handle "not-found" by returning empty array for backward compatibility
+    return result.catchError((error) => {
+      if (error.code === "not-found") {
+        return resultSuccess([]);
+      }
+      throw error; // Re-throw other errors
+    }).unwrapOrThrow();
   }
 
   public async write(args: {
@@ -69,7 +76,8 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
     const path = this.getCollectionPath(identifier).concat(
       args.id
     ) as DocumentPath;
-    await this.db.writeDocument(path, args.data);
+    const result = await this.db.writeDocument(path, args.data);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 
   public async delete(args: {
@@ -80,7 +88,8 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
     const path = this.getCollectionPath(identifier).concat(
       args.id
     ) as DocumentPath;
-    await this.db.deleteDocument(path);
+    const result = await this.db.deleteDocument(path);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 
   public async deleteAll(args: {
@@ -88,6 +97,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier);
-    await this.db.deleteCollection(path);
+    const result = await this.db.deleteCollection(path);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 }

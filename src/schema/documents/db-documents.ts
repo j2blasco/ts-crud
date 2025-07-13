@@ -26,7 +26,8 @@ export class DatabaseDocuments<TDocumentIdentifier, TData>
   }): Promise<void> {
     const { identifier, data } = args;
     const path = this.getDocumentPath(identifier);
-    await this.db.writeDocument(path, data);
+    const result = await this.db.writeDocument(path, data);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 
   // TODO: implement results
@@ -45,7 +46,8 @@ export class DatabaseDocuments<TDocumentIdentifier, TData>
   }): Promise<void> {
     const { identifier, data } = args;
     const path = this.getDocumentPath(identifier);
-    await this.db.writeDocument(path, data);
+    const result = await this.db.writeDocument(path, data);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 
   public async delete(args: {
@@ -53,6 +55,7 @@ export class DatabaseDocuments<TDocumentIdentifier, TData>
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getDocumentPath(identifier);
-    await this.db.deleteDocument(path);
+    const result = await this.db.deleteDocument(path);
+    result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 }

@@ -9,7 +9,7 @@ import {
 export function testNoSqlDbTriggers(db: INoSqlDatabase) {
   describe("NoSqlDatabase - Triggers", () => {
     beforeEach(async () => {
-      await db.deleteDocument(pathTestDocument);
+      (await db.deleteDocument(pathTestDocument)).unwrapOrThrow();
     });
 
     describe("onWrite$", () => {
@@ -20,7 +20,7 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
 
         // Write data to trigger onWrite$ emission
-        await db.writeDocument(pathTestDocument, data);
+        (await db.writeDocument(pathTestDocument, data)).unwrapOrThrow();
 
         const writeEvent = await onWritePromise;
 
@@ -37,7 +37,7 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         const updatedData: TestDocumentData = { stringField: "updated data" };
 
         // Write initial data
-        await db.writeDocument(pathTestDocument, initialData);
+        (await db.writeDocument(pathTestDocument, initialData)).unwrapOrThrow();
 
         const data = (await db.readDocument(pathTestDocument)).unwrapOrThrow();
         expect(data).toEqual(initialData);
@@ -46,7 +46,7 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
 
         // Write updated data to the same path
-        await db.writeDocument(pathTestDocument, updatedData);
+        (await db.writeDocument(pathTestDocument, updatedData)).unwrapOrThrow();
 
         const writeEvent = await onWritePromise;
 
@@ -64,13 +64,13 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         const data: TestDocumentData = { stringField: "data to delete" };
 
         // Write data to ensure a document exists before deletion
-        await db.writeDocument(pathTestDocument, data);
+        (await db.writeDocument(pathTestDocument, data)).unwrapOrThrow();
 
         // Subscribe to onDelete$ and expect a single emission
         const onDeletePromise = firstValueFrom(db.onDelete$.pipe(take(1)));
 
         // Delete the document to trigger onDelete$ emission
-        await db.deleteDocument(pathTestDocument);
+        (await db.deleteDocument(pathTestDocument)).unwrapOrThrow();
 
         const deleteEvent = await onDeletePromise;
 
@@ -91,7 +91,7 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         });
 
         // Attempt to delete a non-existing document
-        await db.deleteDocument(path);
+        (await db.deleteDocument(path)).unwrapOrThrow();
 
         // Unsubscribe to clean up
         subscription.unsubscribe();

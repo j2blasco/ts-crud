@@ -13,12 +13,14 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "types": "./types/index.d.ts"    }
+      "types": "./types/index.d.ts"
+    }
   },
   "files": [
     "dist",
     "types",
-    "README.md",    "LICENSE"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "jest",
