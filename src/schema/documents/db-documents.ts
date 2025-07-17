@@ -1,10 +1,11 @@
 import { resultSuccess, unwrapSuccessResult } from "@j2blasco/ts-result";
 import { DocumentPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
 import { IDatabaseDocuments } from "./db-documents.interface";
+import { JsonObject } from "../../utils/json-type";
 
 export type TestingDocumentPath = string;
 
-export class DatabaseDocuments<TDocumentIdentifier, TData>
+export class DatabaseDocuments<TDocumentIdentifier, TData extends JsonObject>
   implements IDatabaseDocuments<TDocumentIdentifier, TData>
 {
   private readonly db: INoSqlDatabase;
@@ -46,7 +47,7 @@ export class DatabaseDocuments<TDocumentIdentifier, TData>
   }): Promise<void> {
     const { identifier, data } = args;
     const path = this.getDocumentPath(identifier);
-    const result = await this.db.writeDocument(path, data);
+    const result = await this.db.writeDocument(path, data as JsonObject);
     result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 

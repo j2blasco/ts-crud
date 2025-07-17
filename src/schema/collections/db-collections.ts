@@ -7,8 +7,9 @@ import {
   INoSqlDatabase,
 } from "../../core/no-sql-db.interface";
 import { Result, ErrorWithCode, resultSuccess, ErrorUnknown } from "@j2blasco/ts-result";
+import { JsonObject } from "../../utils/json-type";
 
-export class DatabaseCollections<TCollectionIdentifier, TData>
+export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject>
   implements IDatabaseCollections<TCollectionIdentifier, TData>
 {
   private readonly db: INoSqlDatabase;
@@ -36,7 +37,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
     return result.unwrapOrThrow(); // Convert Result to value or throw error
   }
 
-  public async read<TData>(args: {
+  public async read(args: {
     identifier: TCollectionIdentifier;
     id: DocumentId;
   }): Promise<Result<TData, ErrorWithCode<"not-found"> | ErrorUnknown>> {
@@ -48,7 +49,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
     return result;
   }
 
-  public async readAll<TData>(args: {
+  public async readAll(args: {
     identifier: TCollectionIdentifier;
     constraints?: Array<NoSqlDbQueryConstraint<TData>>;
   }): Promise<Array<{ data: TData; id: DocumentId }>> {
@@ -76,7 +77,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData>
     const path = this.getCollectionPath(identifier).concat(
       args.id
     ) as DocumentPath;
-    const result = await this.db.writeDocument(path, args.data);
+    const result = await this.db.writeDocument(path, args.data as JsonObject);
     result.unwrapOrThrow(); // Convert Result to void or throw error
   }
 

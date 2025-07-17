@@ -8,6 +8,7 @@ import {
 } from "@j2blasco/ts-result";
 import { Observable } from "rxjs";
 import { NoSqlDbQueryConstraint } from "./no-sql-db-constraints";
+import { JsonObject } from "../utils/json-type";
 
 export function ensureValidDocumentPath(
   array: string[]
@@ -50,20 +51,32 @@ export interface INoSqlDatabase {
   }>;
 
   // Document
-  writeDocument<T>(
+  writeDocument<T extends JsonObject = JsonObject>(
     path: DocumentPath,
     data: T
   ): Promise<Result<SuccessVoid, ErrorUnknown>>;
-  readDocument<T>(
+  readDocument<T extends JsonObject = JsonObject>(
     path: DocumentPath
   ): Promise<Result<T, ErrorWithCode<"not-found"> | ErrorUnknown>>;
-  deleteDocument(path: DocumentPath): Promise<Result<SuccessVoid, ErrorUnknown>>;
+  deleteDocument(
+    path: DocumentPath
+  ): Promise<Result<SuccessVoid, ErrorUnknown>>;
 
   // Collection
-  readCollection<T>(args: {
+  readCollection<T extends JsonObject = JsonObject>(args: {
     path: CollectionPath;
     constraints?: Array<NoSqlDbQueryConstraint<T>>;
-  }): Promise<Result<Array<{ data: T; id: string }>, ErrorWithCode<"not-found"> | ErrorUnknown>>; 
-  addToCollection<T>(path: CollectionPath, data: T): Promise<Result<{ id: string }, ErrorUnknown>>;
-  deleteCollection(path: CollectionPath): Promise<Result<SuccessVoid, ErrorUnknown>>;
+  }): Promise<
+    Result<
+      Array<{ data: T; id: string }>,
+      ErrorWithCode<"not-found"> | ErrorUnknown
+    >
+  >;
+  addToCollection<T extends JsonObject = JsonObject>(
+    path: CollectionPath,
+    data: T
+  ): Promise<Result<{ id: string }, ErrorUnknown>>;
+  deleteCollection(
+    path: CollectionPath
+  ): Promise<Result<SuccessVoid, ErrorUnknown>>;
 }
