@@ -1,51 +1,65 @@
 {
   "name": "@j2blasco/ts-crud",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "CRUD abstraction library for TypeScript",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./types/index.d.ts",
+  "author": "j2blasco",
+  "license": "MIT",
+  "keywords": [
+    "crud",
+    "typescript",
+    "abstraction"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/j2blasco/ts-crud"
   },
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./types/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
     "dist",
     "types",
-    "src",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "test": "jest",
-    "clean": "rimraf dist types",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json"
+    "boundaries": "ts-boundaries",
+    "build": "npm run clean && tsup",
+    "clean": "shx rm -rf dist types",
+    "lint:fix": "npm run boundaries && eslint src --ext .ts",
+    "lint": "npm run boundaries && eslint src --ext .ts",
+    "prepublishOnly": "npm run build",
+    "script": "tsx --tsconfig ./scripts/tsconfig.json",
+    "test": "jest"
   },
-  "keywords": [
-    "crud",
-    "typescript",
-    "abstraction"
-  ],
-  "author": "",
-  "license": "MIT",
   "type": "module",
   "devDependencies": {
+    "@j2blasco/ts-boundaries": "^0.1.2",
     "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
+    "eslint-import-resolver-typescript": "^4.4.3",
+    "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.0",
     "jest": "^29.7.0",
-    "rimraf": "^6.0.1",
-    "ts-jest": "^29.3.2"
-  },
-  "publishConfig": {
-    "access": "public"
+    "shx": "^0.4.0",
+    "ts-jest": "^29.3.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "~5.7.2"
   },
   "dependencies": {
     "@j2blasco/ts-result": "^0.0.8",

@@ -1,7 +1,9 @@
-import { resultSuccess, unwrapSuccessResult } from "@j2blasco/ts-result";
-import { DocumentPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
-import { IDatabaseDocuments } from "./db-documents.interface";
-import { JsonObject } from "../../utils/json-type";
+import { resultSuccess, unwrapSuccessResult } from '@j2blasco/ts-result';
+
+import { DocumentPath, INoSqlDatabase } from '../../core/no-sql-db.interface';
+import { JsonObject } from '../../utils/json-type';
+
+import { IDatabaseDocuments } from './db-documents.interface';
 
 export type TestingDocumentPath = string;
 
@@ -10,7 +12,7 @@ export class DatabaseDocuments<TDocumentIdentifier, TData extends JsonObject>
 {
   private readonly db: INoSqlDatabase;
   private readonly getDocumentPath: (
-    identifier: TDocumentIdentifier
+    identifier: TDocumentIdentifier,
   ) => DocumentPath;
 
   constructor(deps: {

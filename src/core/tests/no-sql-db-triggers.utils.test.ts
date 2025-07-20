@@ -1,20 +1,22 @@
-import { firstValueFrom, take } from "rxjs";
-import { INoSqlDatabase, DocumentPath } from "../no-sql-db.interface";
+import { firstValueFrom, take } from 'rxjs';
+
+import { INoSqlDatabase, DocumentPath } from '../no-sql-db.interface';
+
 import {
   dbTestRootPath,
   pathTestDocument,
   TestDocumentData,
-} from "./no-sql-db.utils.test";
+} from './no-sql-db.utils.test';
 
 export function testNoSqlDbTriggers(db: INoSqlDatabase) {
-  describe("NoSqlDatabase - Triggers", () => {
+  describe('NoSqlDatabase - Triggers', () => {
     beforeEach(async () => {
       (await db.deleteDocument(pathTestDocument)).unwrapOrThrow();
     });
 
-    describe("onWrite$", () => {
-      it("emits an event when a document is written", async () => {
-        const data: TestDocumentData = { stringField: "test data" };
+    describe('onWrite$', () => {
+      it('emits an event when a document is written', async () => {
+        const data: TestDocumentData = { stringField: 'test data' };
 
         // Subscribe to onWrite$ and expect a single emission
         const onWritePromise = firstValueFrom(db.onWrite$.pipe(take(1)));
@@ -33,8 +35,8 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
       });
 
       it("emits the correct 'before' data when updating an existing document", async () => {
-        const initialData: TestDocumentData = { stringField: "initial data" };
-        const updatedData: TestDocumentData = { stringField: "updated data" };
+        const initialData: TestDocumentData = { stringField: 'initial data' };
+        const updatedData: TestDocumentData = { stringField: 'updated data' };
 
         // Write initial data
         (await db.writeDocument(pathTestDocument, initialData)).unwrapOrThrow();
@@ -59,9 +61,9 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
       });
     });
 
-    describe("onDelete$", () => {
-      it("emits an event when a document is deleted", async () => {
-        const data: TestDocumentData = { stringField: "data to delete" };
+    describe('onDelete$', () => {
+      it('emits an event when a document is deleted', async () => {
+        const data: TestDocumentData = { stringField: 'data to delete' };
 
         // Write data to ensure a document exists before deletion
         (await db.writeDocument(pathTestDocument, data)).unwrapOrThrow();
@@ -81,8 +83,8 @@ export function testNoSqlDbTriggers(db: INoSqlDatabase) {
         });
       });
 
-      it("does not emit an event when attempting to delete a non-existing document", async () => {
-        const path: DocumentPath = [dbTestRootPath, "nonexistent-document"];
+      it('does not emit an event when attempting to delete a non-existing document', async () => {
+        const path: DocumentPath = [dbTestRootPath, 'nonexistent-document'];
 
         // Listen to onDelete$ and ensure no emission
         let emitted = false;

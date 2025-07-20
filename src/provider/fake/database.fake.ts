@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Result,
   ErrorWithCode,
@@ -6,16 +7,17 @@ import {
   ErrorUnknown,
   SuccessVoid,
   resultSuccessVoid,
-} from "@j2blasco/ts-result";
-import { Subject } from "rxjs";
-import { v4 as uuidv4 } from "uuid";
-import { NoSqlDbQueryConstraint } from "../../core/no-sql-db-constraints";
+} from '@j2blasco/ts-result';
+import { Subject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
+
+import { NoSqlDbQueryConstraint } from '../../core/no-sql-db-constraints';
 import {
   INoSqlDatabase,
   NoSqlDbPath,
   DocumentPath,
   CollectionPath,
-} from "../../core/no-sql-db.interface";
+} from '../../core/no-sql-db.interface';
 
 export function createNoSqlDatabaseTesting() {
   return new NoSqlDatabaseTesting();
@@ -67,17 +69,19 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
   public onDelete$ = new Subject<{ path: NoSqlDbPath; before: unknown }>();
 
   public async readDocument(
-    path: DocumentPath
-  ): Promise<Result<any, ErrorWithCode<"not-found"> | ErrorUnknown>> {
+    path: DocumentPath,
+  ): Promise<Result<any, ErrorWithCode<'not-found'> | ErrorUnknown>> {
     try {
       await this.simulateCommunicationDelay();
       const element = this.getElementAtPath(path);
       if (!element) {
-        return resultError.withCode("not-found");
+        return resultError.withCode('not-found');
       }
       return resultSuccess(this.copyElement(element));
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 
@@ -88,15 +92,20 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
   public async readCollection<T>(args: {
     path: CollectionPath;
     constraints?: Array<NoSqlDbQueryConstraint<T>>;
-  }): Promise<Result<Array<{ data: T; id: string }>, ErrorWithCode<"not-found"> | ErrorUnknown>> {
+  }): Promise<
+    Result<
+      Array<{ data: T; id: string }>,
+      ErrorWithCode<'not-found'> | ErrorUnknown
+    >
+  > {
     try {
       await this.simulateCommunicationDelay();
       const collection = this.getElementAtPath(args.path);
       if (!collection) {
-        return resultError.withCode("not-found");
+        return resultError.withCode('not-found');
       }
-      if (typeof collection !== "object") {
-        return resultError.withCode("not-found");
+      if (typeof collection !== 'object') {
+        return resultError.withCode('not-found');
       }
 
       let documents = Object.entries(collection).map(([id, doc]) => ({
@@ -107,40 +116,42 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
       if (!args.constraints) return resultSuccess(documents);
 
       for (const constraint of args.constraints) {
-        if (constraint.type === "where") {
+        if (constraint.type === 'where') {
           const constraintValue = constraint.value as any;
           documents = documents.filter((doc) => {
             const fieldValue = doc.data[constraint.field as keyof T];
             switch (constraint.operator) {
-              case "<":
+              case '<':
                 return fieldValue < constraintValue;
-              case "<=":
+              case '<=':
                 return fieldValue <= constraintValue;
-              case "==":
+              case '==':
                 return fieldValue === constraintValue;
-              case ">=":
+              case '>=':
                 return fieldValue >= constraintValue;
-              case ">":
+              case '>':
                 return fieldValue > constraintValue;
               default:
                 return false;
             }
           });
-        } else if (constraint.type === "array-contains") {
+        } else if (constraint.type === 'array-contains') {
           documents = documents.filter((doc) => {
             const fieldValue = doc.data[constraint.field as keyof T];
             return (
               Array.isArray(fieldValue) && fieldValue.includes(constraint.value)
             );
           });
-        } else if (constraint.type === "limit") {
+        } else if (constraint.type === 'limit') {
           documents = documents.slice(0, constraint.value);
         }
       }
 
       return resultSuccess(documents);
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 
@@ -152,7 +163,7 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
 
   public async addToCollection<T>(
     path: CollectionPath,
-    data: T
+    data: T,
   ): Promise<Result<{ id: string }, ErrorUnknown>> {
     try {
       await this.simulateCommunicationDelay();
@@ -174,21 +185,28 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
       });
       return resultSuccess({ id });
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 
-  public async writeDocument<T>(path: DocumentPath, data: T): Promise<Result<SuccessVoid, ErrorUnknown>> {
+  public async writeDocument<T>(
+    path: DocumentPath,
+    data: T,
+  ): Promise<Result<SuccessVoid, ErrorUnknown>> {
     try {
       await this.simulateCommunicationDelay();
 
       data = this.copyElement(data as any);
 
       // Traverse to the second-to-last element in the path, creating any missing levels
-      const parentElement = path.slice(0, -1).reduce((acc: any, key: string) => {
-        if (!acc[key]) acc[key] = {};
-        return acc[key];
-      }, this.dataStore);
+      const parentElement = path
+        .slice(0, -1)
+        .reduce((acc: any, key: string) => {
+          if (!acc[key]) acc[key] = {};
+          return acc[key];
+        }, this.dataStore);
 
       const lastKey = path[path.length - 1];
 
@@ -198,7 +216,10 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
         : null;
 
       // Merge existing data with new data if it's an object, otherwise overwrite
-      if (parentElement[lastKey] && typeof parentElement[lastKey] === "object") {
+      if (
+        parentElement[lastKey] &&
+        typeof parentElement[lastKey] === 'object'
+      ) {
         deepMerge(parentElement[lastKey], data);
       } else {
         parentElement[lastKey] = data;
@@ -213,11 +234,15 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
 
       return resultSuccessVoid();
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 
-  public async deleteDocument(path: DocumentPath): Promise<Result<SuccessVoid, ErrorUnknown>> {
+  public async deleteDocument(
+    path: DocumentPath,
+  ): Promise<Result<SuccessVoid, ErrorUnknown>> {
     try {
       await this.simulateCommunicationDelay();
 
@@ -234,11 +259,15 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
 
       return resultSuccessVoid();
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 
-  public async deleteCollection(path: CollectionPath): Promise<Result<SuccessVoid, ErrorUnknown>> {
+  public async deleteCollection(
+    path: CollectionPath,
+  ): Promise<Result<SuccessVoid, ErrorUnknown>> {
     try {
       const parentElement = path
         .slice(0, -1)
@@ -261,7 +290,9 @@ export class NoSqlDatabaseTesting implements INoSqlDatabase {
 
       return resultSuccessVoid();
     } catch (error) {
-      return resultError.unknown(error instanceof Error ? error.message : "Unknown error occurred");
+      return resultError.unknown(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+      );
     }
   }
 }

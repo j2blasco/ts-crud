@@ -1,6 +1,7 @@
+import { ErrorWithCode, Result, ErrorUnknown } from '@j2blasco/ts-result';
+
 import { NoSqlDbQueryConstraint } from '../../core/no-sql-db-constraints';
 import { DocumentId } from '../documents/db-documents.interface';
-import { ErrorWithCode, Result, ErrorUnknown } from '@j2blasco/ts-result';
 
 export interface IDatabaseCollections<TIdentifier, TData> {
   // TODO: all of these might fail, so we should return a Result

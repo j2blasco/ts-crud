@@ -1,27 +1,36 @@
-import { IDatabaseCollections } from "./db-collections.interface";
-import { DocumentId } from "../documents/db-documents.interface";
-import { NoSqlDbQueryConstraint } from "../../core/no-sql-db-constraints";
+import {
+  Result,
+  ErrorWithCode,
+  resultSuccess,
+  ErrorUnknown,
+} from '@j2blasco/ts-result';
+
+import { DocumentId } from '../documents/db-documents.interface';
+import { NoSqlDbQueryConstraint } from '../../core/no-sql-db-constraints';
 import {
   CollectionPath,
   DocumentPath,
   INoSqlDatabase,
-} from "../../core/no-sql-db.interface";
-import { Result, ErrorWithCode, resultSuccess, ErrorUnknown } from "@j2blasco/ts-result";
-import { JsonObject } from "../../utils/json-type";
+} from '../../core/no-sql-db.interface';
+import { JsonObject } from '../../utils/json-type';
 
-export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject>
-  implements IDatabaseCollections<TCollectionIdentifier, TData>
+import { IDatabaseCollections } from './db-collections.interface';
+
+export class DatabaseCollections<
+  TCollectionIdentifier,
+  TData extends JsonObject,
+> implements IDatabaseCollections<TCollectionIdentifier, TData>
 {
   private readonly db: INoSqlDatabase;
   private readonly getCollectionPath: (
-    identifier: TCollectionIdentifier
+    identifier: TCollectionIdentifier,
   ) => CollectionPath;
 
   constructor(
     private deps: {
       db: INoSqlDatabase;
       getCollectionPath: (identifier: TCollectionIdentifier) => CollectionPath;
-    }
+    },
   ) {
     this.db = this.deps.db;
     this.getCollectionPath = this.deps.getCollectionPath;
@@ -40,10 +49,10 @@ export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject
   public async read(args: {
     identifier: TCollectionIdentifier;
     id: DocumentId;
-  }): Promise<Result<TData, ErrorWithCode<"not-found"> | ErrorUnknown>> {
+  }): Promise<Result<TData, ErrorWithCode<'not-found'> | ErrorUnknown>> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id
+      args.id,
     ) as DocumentPath;
     const result = await this.db.readDocument<TData>(path);
     return result;
@@ -60,12 +69,14 @@ export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject
       constraints: args.constraints,
     });
     // Handle "not-found" by returning empty array for backward compatibility
-    return result.catchError((error) => {
-      if (error.code === "not-found") {
-        return resultSuccess([]);
-      }
-      throw error; // Re-throw other errors
-    }).unwrapOrThrow();
+    return result
+      .catchError((error) => {
+        if (error.code === 'not-found') {
+          return resultSuccess([]);
+        }
+        throw error; // Re-throw other errors
+      })
+      .unwrapOrThrow();
   }
 
   public async write(args: {
@@ -75,7 +86,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id
+      args.id,
     ) as DocumentPath;
     const result = await this.db.writeDocument(path, args.data as JsonObject);
     result.unwrapOrThrow(); // Convert Result to void or throw error
@@ -87,7 +98,7 @@ export class DatabaseCollections<TCollectionIdentifier, TData extends JsonObject
   }): Promise<void> {
     const { identifier } = args;
     const path = this.getCollectionPath(identifier).concat(
-      args.id
+      args.id,
     ) as DocumentPath;
     const result = await this.db.deleteDocument(path);
     result.unwrapOrThrow(); // Convert Result to void or throw error

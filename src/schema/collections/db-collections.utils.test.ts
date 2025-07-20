@@ -1,8 +1,10 @@
-import { unwrapSuccessResult, resultSuccessVoid } from "@j2blasco/ts-result";
-import { dbTestRootPath } from "../../core/tests/no-sql-db.utils.test";
-import { CollectionPath, INoSqlDatabase } from "../../core/no-sql-db.interface";
-import { DatabaseCollections } from "./db-collections";
-import { IDatabaseCollections } from "./db-collections.interface";
+import { unwrapSuccessResult, resultSuccessVoid } from '@j2blasco/ts-result';
+
+import { dbTestRootPath } from '../../core/tests/no-sql-db.utils.test';
+import { CollectionPath, INoSqlDatabase } from '../../core/no-sql-db.interface';
+
+import { DatabaseCollections } from './db-collections';
+import { IDatabaseCollections } from './db-collections.interface';
 
 type TestCollectionIdentifier = {
   id: string;
@@ -14,28 +16,29 @@ type TestCollectionData = {
 };
 
 const getTestCollectionPath = (identifier: TestCollectionIdentifier) =>
-  [dbTestRootPath, "collections", identifier.id] as CollectionPath;
+  [dbTestRootPath, 'collections', identifier.id] as CollectionPath;
 
 export function testDbCollections(db: INoSqlDatabase) {
-  describe("DbCollections", () => {
-    const testIdentifier = { id: "test" };
+  describe('DbCollections', () => {
+    const testIdentifier = { id: 'test' };
     let collection: IDatabaseCollections<
       TestCollectionIdentifier,
       TestCollectionData
-    >;      beforeEach(async () => {
-        // Clear the data store before each test
-        collection = new DatabaseCollections<
-          TestCollectionIdentifier,
-          TestCollectionData
-        >({ db, getCollectionPath: getTestCollectionPath });
-        await collection.deleteAll({ identifier: testIdentifier });
-      });
+    >;
+    beforeEach(async () => {
+      // Clear the data store before each test
+      collection = new DatabaseCollections<
+        TestCollectionIdentifier,
+        TestCollectionData
+      >({ db, getCollectionPath: getTestCollectionPath });
+      await collection.deleteAll({ identifier: testIdentifier });
+    });
 
-    describe("add", () => {
-      it("adds a document to the collection", async () => {
+    describe('add', () => {
+      it('adds a document to the collection', async () => {
         const addResult = await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "test" },
+          data: { value: 1, name: 'test' },
         });
         const readResult = (
           await collection.read({
@@ -44,7 +47,7 @@ export function testDbCollections(db: INoSqlDatabase) {
           })
         ).catchError((e) => {
           throw new Error(
-            `Error reading data from collection: ${JSON.stringify(e)}`
+            `Error reading data from collection: ${JSON.stringify(e)}`,
           );
         });
         const data = unwrapSuccessResult(readResult);
@@ -52,11 +55,11 @@ export function testDbCollections(db: INoSqlDatabase) {
       });
     });
 
-    describe("read", () => {
-      it("reads a document from the collection", async () => {
+    describe('read', () => {
+      it('reads a document from the collection', async () => {
         const addResult = await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "test" },
+          data: { value: 1, name: 'test' },
         });
         const readResult = (
           await collection.read({
@@ -65,7 +68,7 @@ export function testDbCollections(db: INoSqlDatabase) {
           })
         ).catchError((e) => {
           throw new Error(
-            `Error reading data from collection: ${JSON.stringify(e)}`
+            `Error reading data from collection: ${JSON.stringify(e)}`,
           );
         });
         const data = unwrapSuccessResult(readResult);
@@ -73,15 +76,15 @@ export function testDbCollections(db: INoSqlDatabase) {
       });
     });
 
-    describe("readAll", () => {
-      it("reads all documents from the collection", async () => {
+    describe('readAll', () => {
+      it('reads all documents from the collection', async () => {
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "test1" },
+          data: { value: 1, name: 'test1' },
         });
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 2, name: "test2" },
+          data: { value: 2, name: 'test2' },
         });
         const readResult = await collection.readAll({
           identifier: testIdentifier,
@@ -90,32 +93,32 @@ export function testDbCollections(db: INoSqlDatabase) {
           .map((r) => r.data)
           .sort((a, b) => a.value - b.value);
         expect(data).toEqual([
-          { value: 1, name: "test1" },
-          { value: 2, name: "test2" },
+          { value: 1, name: 'test1' },
+          { value: 2, name: 'test2' },
         ]);
       });
 
-      it("reads all documents from the collection that match a query", async () => {
+      it('reads all documents from the collection that match a query', async () => {
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "a" },
+          data: { value: 1, name: 'a' },
         });
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 2, name: "b" },
+          data: { value: 2, name: 'b' },
         });
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 3, name: "a" },
+          data: { value: 3, name: 'a' },
         });
         const readResult = await collection.readAll({
           identifier: testIdentifier,
           constraints: [
             {
-              type: "where",
-              field: "name",
-              operator: "==",
-              value: "a",
+              type: 'where',
+              field: 'name',
+              operator: '==',
+              value: 'a',
             },
           ],
         });
@@ -123,22 +126,22 @@ export function testDbCollections(db: INoSqlDatabase) {
           .map((r) => r.data)
           .sort((a, b) => a.value - b.value);
         expect(data).toEqual([
-          { value: 1, name: "a" },
-          { value: 3, name: "a" },
+          { value: 1, name: 'a' },
+          { value: 3, name: 'a' },
         ]);
       });
     });
 
-    describe("write", () => {
-      it("updates a document to the collection", async () => {
+    describe('write', () => {
+      it('updates a document to the collection', async () => {
         const addResult = await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "initial" },
+          data: { value: 1, name: 'initial' },
         });
         await collection.write({
           identifier: testIdentifier,
           id: addResult.id,
-          data: { value: 2, name: "updated" },
+          data: { value: 2, name: 'updated' },
         });
         const readResult = (
           await collection.read({
@@ -147,39 +150,39 @@ export function testDbCollections(db: INoSqlDatabase) {
           })
         ).catchError((e) => {
           throw new Error(
-            `Error reading data from collection: ${JSON.stringify(e)}`
+            `Error reading data from collection: ${JSON.stringify(e)}`,
           );
         });
         const data = unwrapSuccessResult(readResult);
-        expect(data).toEqual({ value: 2, name: "updated" });
+        expect(data).toEqual({ value: 2, name: 'updated' });
       });
 
-      it("creates a document of the collection if it does not exist", async () => {
+      it('creates a document of the collection if it does not exist', async () => {
         await collection.write({
           identifier: testIdentifier,
-          id: "1",
-          data: { value: 1, name: "new" },
+          id: '1',
+          data: { value: 1, name: 'new' },
         });
         const readResult = (
           await collection.read({
             identifier: testIdentifier,
-            id: "1",
+            id: '1',
           })
         ).catchError((e) => {
           throw new Error(
-            `Error reading data from collection: ${JSON.stringify(e)}`
+            `Error reading data from collection: ${JSON.stringify(e)}`,
           );
         });
         const data = unwrapSuccessResult(readResult);
-        expect(data).toEqual({ value: 1, name: "new" });
+        expect(data).toEqual({ value: 1, name: 'new' });
       });
     });
 
-    describe("delete", () => {
-      it("deletes a document from the collection", async () => {
+    describe('delete', () => {
+      it('deletes a document from the collection', async () => {
         const addResult = await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "to-delete" },
+          data: { value: 1, name: 'to-delete' },
         });
         await collection.delete({
           identifier: testIdentifier,
@@ -189,24 +192,24 @@ export function testDbCollections(db: INoSqlDatabase) {
           identifier: testIdentifier,
           id: addResult.id,
         });
-        let errorCode = "";
+        let errorCode = '';
         readResult.catchError((e) => {
           errorCode = e.code;
           return resultSuccessVoid();
         });
-        expect(errorCode).toEqual("not-found");
+        expect(errorCode).toEqual('not-found');
       });
     });
 
-    describe("deleteAll", () => {
-      it("deletes all documents from the collection", async () => {
+    describe('deleteAll', () => {
+      it('deletes all documents from the collection', async () => {
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 1, name: "item1" },
+          data: { value: 1, name: 'item1' },
         });
         await collection.add({
           identifier: testIdentifier,
-          data: { value: 2, name: "item2" },
+          data: { value: 2, name: 'item2' },
         });
         await collection.deleteAll({
           identifier: testIdentifier,
