@@ -1,6 +1,6 @@
 {
   "name": "@j2blasco/ts-crud",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "CRUD abstraction library for TypeScript",
   "author": "j2blasco",
   "license": "MIT",
@@ -17,7 +17,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/j2blasco/ts-crud"
+    "url": "git+https://github.com/j2blasco/ts-crud.git"
   },
   "exports": {
     ".": {
@@ -62,7 +62,7 @@
     "typescript": "~5.7.2"
   },
   "dependencies": {
-    "@j2blasco/ts-result": "^0.0.8",
+    "@j2blasco/ts-result": "^0.1.2",
     "rxjs": "^7.8.2",
     "ts-node": "^10.9.2",
     "uuid": "^11.1.0"
